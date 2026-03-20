@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Panel</title>
+
+    <style>
+        body {
+            background: #0f172a;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+            padding-top: 50px;
+        }
+
+        .box {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        a {
+            display: block;
+            margin-top: 15px;
+            color: red;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h1>Panel de usuario 😎</h1>
+    <p>Bienvenido: {{ usuario }}</p>
+
+    <a href="/logout">Cerrar sesión 🚪</a>
+</div>
+
+</body>
+</html>

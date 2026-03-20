@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login ANGEL OFC DEV</title>
+
+    <style>
+        body {
+            background: #0f172a;
+            color: white;
+            font-family: Arial;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .box {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            width: 250px;
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: none;
+            border-radius: 5px;
+            background: #3b82f6;
+            color: white;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>ANGEL OFC DEV</h2>
+
+    <form method="POST">
+        <input type="text" name="usuario" placeholder="Usuario" required>
+        <input type="password" name="password" placeholder="Contraseña" required>
+
+        <button name="accion" value="registrar">Registrarse</button>
+        <button name="accion" value="login">Login</button>
+    </form>
+
+    <p>{{ mensaje }}</p>
+</div>
+
+</body>
+</html>
