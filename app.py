@@ -4,9 +4,11 @@ import sqlite3
 app = Flask(__name__)
 app.secret_key = "clave_secreta"
 
+# Función para conectar a la base de datos
 def get_db():
     return sqlite3.connect("mi_base.db")
 
+# Página principal: login / registro
 @app.route("/", methods=["GET", "POST"])
 def index():
     mensaje = ""
@@ -19,6 +21,7 @@ def index():
         conexion = get_db()
         cursor = conexion.cursor()
 
+        # Crear tabla si no existe
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,6 +30,7 @@ def index():
         )
         """)
 
+        # REGISTRO
         if accion == "registrar":
             cursor.execute("SELECT * FROM usuarios WHERE nombre=?", (usuario,))
             if cursor.fetchone():
@@ -36,12 +40,14 @@ def index():
                 conexion.commit()
                 mensaje = "Registrado ✅"
 
+        # LOGIN
         elif accion == "login":
             cursor.execute("SELECT * FROM usuarios WHERE nombre=? AND password=?", (usuario, password))
             usuario_db = cursor.fetchone()
 
             if usuario_db:
                 session["usuario"] = usuario
+                conexion.close()
                 return redirect(url_for("panel"))
             else:
                 mensaje = "Datos incorrectos ❌"
@@ -50,7 +56,7 @@ def index():
 
     return render_template("index.html", mensaje=mensaje)
 
-# PANEL
+# PANEL DE USUARIO
 @app.route("/panel")
 def panel():
     if "usuario" in session:
@@ -58,10 +64,12 @@ def panel():
     else:
         return redirect(url_for("index"))
 
-# LOGOUT
+# CERRAR SESIÓN
 @app.route("/logout")
 def logout():
     session.pop("usuario", None)
     return redirect(url_for("index"))
 
-app.run(host="0.0.0.0", port=5000)
+# SOLO se ejecuta si es local
+if __name__ == "__main__":
+    app.run()
