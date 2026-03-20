@@ -1,66 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login ANGEL OFC DEV</title>
-
+    <title>Login / Registro</title>
     <style>
-        body {
-            background: #0f172a;
-            color: white;
-            font-family: Arial;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .box {
-            background: #1e293b;
-            padding: 20px;
-            border-radius: 10px;
-            width: 250px;
-            text-align: center;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border: none;
-            border-radius: 5px;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: none;
-            border-radius: 5px;
-            background: #3b82f6;
-            color: white;
-        }
-
-        button:hover {
-            background: #2563eb;
-        }
+        body { background: #0f172a; color: white; font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        input { margin: 5px; padding: 10px; border-radius: 5px; border: none; }
+        button { margin: 5px; padding: 10px 20px; border-radius: 5px; background: #10b981; color: white; font-weight: bold; border: none; cursor: pointer; }
+        button:hover { background: #059669; }
+        .mensaje { margin-top: 10px; color: #fbbf24; }
     </style>
 </head>
-
 <body>
-
-<div class="box">
-    <h2>ANGEL OFC DEV</h2>
-
+    <h1>Login / Registro</h1>
     <form method="POST">
         <input type="text" name="usuario" placeholder="Usuario" required>
         <input type="password" name="password" placeholder="Contraseña" required>
-
+        <br>
+        <button name="accion" value="login">Iniciar sesión</button>
         <button name="accion" value="registrar">Registrarse</button>
-        <button name="accion" value="login">Login</button>
     </form>
-
-    <p>{{ mensaje }}</p>
-</div>
-
+    {% if mensaje %}
+        <div class="mensaje">{{ mensaje }}</div>
+    {% endif %}
 </body>
 </html>
