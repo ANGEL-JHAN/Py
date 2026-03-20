@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Canvas Profesional</title>
+    <style>
+        body {
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        canvas {
+            background: #1e293b;
+            border: 2px solid #10b981;
+            margin-top: 20px;
+            touch-action: none; /* Permite tocar en móvil */
+        }
+        .controls {
+            margin-top: 10px;
+        }
+        button, select, input[type=number] {
+            margin: 5px;
+            padding: 8px 15px;
+            background: #10b981;
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover, select:hover, input:hover {
+            background: #059669;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Canvas Profesional 🎨</h1>
+
+<div class="controls">
+    <label>Color: <input type="color" id="colorPicker" value="#10b981"></label>
+    <label>Tamaño: <input type="number" id="sizePicker" min="1" max="50" value="5"></label>
+    <button onclick="borrarCanvas()">Borrar todo</button>
+    <button onclick="guardarCanvas()">Guardar imagen</button>
+</div>
+
+<canvas id="myCanvas" width="800" height="500"></canvas>
+
+<script>
+const canvas = document.getElementById('myCanvas');
+const ctx = canvas.getContext('2d');
+let dibujando = false;
+let color = document.getElementById('colorPicker').value;
+let size = document.getElementById('sizePicker').value;
+
+// Actualizar color y tamaño
+document.getElementById('colorPicker').addEventListener('change', e => color = e.target.value);
+document.getElementById('sizePicker').addEventListener('change', e => size = e.target.value);
+
+// Eventos mouse y touch
+function iniciar(e) { dibujando = true; dibujar(e); }
+function terminar() { dibujando = false; ctx.beginPath(); }
+function dibujar(e) {
+    if(!dibujando) return;
+    e.preventDefault();
+    let rect = canvas.getBoundingClientRect();
+    let x = (e.clientX || e.touches[0].clientX) - rect.left;
+    let y = (e.clientY || e.touches[0].clientY) - rect.top;
+
+    ctx.lineWidth = size;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = color;
+
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+}
+
+// Eventos
+canvas.addEventListener('mousedown', iniciar);
+canvas.addEventListener('mouseup', terminar);
+canvas.addEventListener('mousemove', dibujar);
+canvas.addEventListener('touchstart', iniciar);
+canvas.addEventListener('touchend', terminar);
+canvas.addEventListener('touchmove', dibujar);
+
+// Funciones
+function borrarCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function guardarCanvas() {
+    let enlace = document.createElement('a');
+    enlace.download = 'dibujo.png';
+    enlace.href = canvas.toDataURL();
+    enlace.click();
+}
+</script>
+
+</body>
+</html>
