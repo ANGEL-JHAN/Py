@@ -18,7 +18,23 @@
     <a href="/logout" class="button">Cerrar sesión 🚪</a>
     <a href="/canvas_pro" class="button">Canvas Profesional 🎨</a>
 </div>
+<h2>Bienvenido, {{ usuario }} {% if rol=='admin' %}(Admin){% endif %}</h2>
 
+<h3>Usuarios registrados</h3>
+{% if rol == 'admin' %}
+<table>
+    <tr><th>ID</th><th>Nombre</th><th>Rol</th></tr>
+    {% for u in usuarios %}
+    <tr>
+        <td>{{ u[0] }}</td>
+        <td>{{ u[1] }}</td>
+        <td>{{ u[2] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>Solo puedes ver tu información: {{ usuarios[0][1] }}</p>
+{% endif %}
 <div class="card">
     <h3>Usuarios registrados</h3>
     <table>
