@@ -1,0 +1,2 @@
+ALTER TABLE usuarios ADD COLUMN rol TEXT DEFAULT 'user';
+INSERT INTO usuarios (nombre, password, rol) VALUES ('Angel', '12345', 'admin');
