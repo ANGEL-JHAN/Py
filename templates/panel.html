@@ -1,41 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Panel</title>
-
+    <title>Panel de usuario</title>
     <style>
-        body {
-            background: #0f172a;
-            color: white;
-            font-family: Arial;
-            text-align: center;
-            padding-top: 50px;
-        }
-
-        .box {
-            background: #1e293b;
-            padding: 20px;
-            border-radius: 10px;
-            display: inline-block;
-        }
-
-        a {
-            display: block;
-            margin-top: 15px;
-            color: red;
-            text-decoration: none;
-        }
+        body { background: #0f172a; color: #e2e8f0; font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .card { background: #1e293b; padding: 20px; border-radius: 10px; margin: 10px auto; max-width: 500px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 8px; border-bottom: 1px solid #334155; }
+        th { background: #334155; }
+        a.button { display: inline-block; padding: 10px 20px; background: #10b981; color: white; border-radius: 5px; text-decoration: none; margin-top: 10px; }
+        a.button:hover { background: #059669; }
     </style>
 </head>
-
 <body>
-
-<div class="box">
-    <h1>Panel de usuario 😎</h1>
-    <p>Bienvenido: {{ usuario }}</p>
-
-    <a href="/logout">Cerrar sesión 🚪</a>
+<div class="card">
+    <h2>Bienvenido, {{ usuario }}</h2>
+    <a href="/logout" class="button">Cerrar sesión 🚪</a>
+    <a href="/canvas_pro" class="button">Canvas Profesional 🎨</a>
 </div>
 
+<div class="card">
+    <h3>Usuarios registrados</h3>
+    <table>
+        <tr><th>ID</th><th>Nombre</th></tr>
+        {% if usuarios %}
+            {% for u in usuarios %}
+            <tr>
+                <td>{{ u[0] }}</td>
+                <td>{{ u[1] }}</td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr><td colspan="2">No hay usuarios registrados</td></tr>
+        {% endif %}
+    </table>
+</div>
 </body>
 </html>
