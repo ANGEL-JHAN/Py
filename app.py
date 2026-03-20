@@ -17,7 +17,7 @@ def login_required(f):
     wrap.__name__ = f.__name__
     return wrap
 
-# Login/Registro
+# Login / Registro
 @app.route("/", methods=["GET", "POST"])
 def index():
     mensaje = ""
@@ -32,7 +32,8 @@ def index():
             CREATE TABLE IF NOT EXISTS usuarios (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nombre TEXT,
-                password TEXT
+                password TEXT,
+                rol TEXT DEFAULT 'user'
             )
         """)
 
@@ -41,14 +42,17 @@ def index():
             if cursor.fetchone():
                 mensaje = "Usuario ya existe ❌"
             else:
-                cursor.execute("INSERT INTO usuarios (nombre, password) VALUES (?, ?)", (usuario, password))
+                # Todos los nuevos usuarios son 'user' por defecto
+                cursor.execute("INSERT INTO usuarios (nombre, password, rol) VALUES (?, ?, ?)", (usuario, password, 'user'))
                 conexion.commit()
                 mensaje = "Registrado ✅"
 
         elif accion == "login":
             cursor.execute("SELECT * FROM usuarios WHERE nombre=? AND password=?", (usuario, password))
-            if cursor.fetchone():
+            usuario_db = cursor.fetchone()
+            if usuario_db:
                 session["usuario"] = usuario
+                session["rol"] = usuario_db[3]  # Guardamos el rol en la sesión
                 conexion.close()
                 return redirect(url_for("panel"))
             else:
@@ -64,20 +68,25 @@ def index():
 def panel():
     conexion = get_db()
     cursor = conexion.cursor()
-    cursor.execute("SELECT id, nombre FROM usuarios")
+
+    # Obtener rol del usuario
+    rol = session.get("rol", "user")
+
+    if rol == "admin":
+        cursor.execute("SELECT id, nombre, rol FROM usuarios")
+    else:
+        cursor.execute("SELECT id, nombre, rol FROM usuarios WHERE nombre=?", (session["usuario"],))
+
     usuarios = cursor.fetchall()
     conexion.close()
 
-    response = make_response(render_template("panel.html", usuario=session["usuario"], usuarios=usuarios))
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
-    return response
+    return render_template("panel.html", usuario=session["usuario"], usuarios=usuarios, rol=rol)
 
 # Logout
 @app.route("/logout")
 def logout():
     session.pop("usuario", None)
+    session.pop("rol", None)
     return redirect(url_for("index"))
 
 # Canvas profesional
