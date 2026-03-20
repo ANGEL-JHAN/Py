@@ -1,18 +1,26 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, make_response
 import sqlite3
 
 app = Flask(__name__)
 app.secret_key = "clave_secreta"
 
-# Función para conectar a la base de datos
+# Conexión DB
 def get_db():
     return sqlite3.connect("mi_base.db")
 
-# Página principal: login / registro
+# Decorador para rutas protegidas
+def login_required(f):
+    def wrap(*args, **kwargs):
+        if "usuario" not in session:
+            return redirect(url_for("index"))
+        return f(*args, **kwargs)
+    wrap.__name__ = f.__name__
+    return wrap
+
+# Login/Registro
 @app.route("/", methods=["GET", "POST"])
 def index():
     mensaje = ""
-
     if request.method == "POST":
         usuario = request.form["usuario"]
         password = request.form["password"]
@@ -20,17 +28,14 @@ def index():
 
         conexion = get_db()
         cursor = conexion.cursor()
-
-        # Crear tabla si no existe
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS usuarios (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombre TEXT,
-            password TEXT
-        )
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre TEXT,
+                password TEXT
+            )
         """)
 
-        # REGISTRO
         if accion == "registrar":
             cursor.execute("SELECT * FROM usuarios WHERE nombre=?", (usuario,))
             if cursor.fetchone():
@@ -40,12 +45,9 @@ def index():
                 conexion.commit()
                 mensaje = "Registrado ✅"
 
-        # LOGIN
         elif accion == "login":
             cursor.execute("SELECT * FROM usuarios WHERE nombre=? AND password=?", (usuario, password))
-            usuario_db = cursor.fetchone()
-
-            if usuario_db:
+            if cursor.fetchone():
                 session["usuario"] = usuario
                 conexion.close()
                 return redirect(url_for("panel"))
@@ -56,20 +58,34 @@ def index():
 
     return render_template("index.html", mensaje=mensaje)
 
-# PANEL DE USUARIO
+# Panel usuarios
 @app.route("/panel")
+@login_required
 def panel():
-    if "usuario" in session:
-        return render_template("panel.html", usuario=session["usuario"])
-    else:
-        return redirect(url_for("index"))
+    conexion = get_db()
+    cursor = conexion.cursor()
+    cursor.execute("SELECT id, nombre FROM usuarios")
+    usuarios = cursor.fetchall()
+    conexion.close()
 
-# CERRAR SESIÓN
+    response = make_response(render_template("panel.html", usuario=session["usuario"], usuarios=usuarios))
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
+# Logout
 @app.route("/logout")
 def logout():
     session.pop("usuario", None)
     return redirect(url_for("index"))
 
-# SOLO se ejecuta si es local
+# Canvas profesional
+@app.route("/canvas_pro")
+@login_required
+def canvas_pro():
+    return render_template("canvas_pro.html")
+
+# Ejecutar app
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", port=5000, debug=True)
